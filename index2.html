@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>View a fullscreen map</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .marker {
+            display: block;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="map-container">
+        <div class="header">
+            <div class="container">
+                <div class="hear-wrapper">
+                    <div class="logo">Bus Tracker</div>
+                    <div class="links">
+                        <a href="">Link 1</a>
+                        <a href="">Link 2</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="legends">
+            <ul>
+                <li>Buccleuch Route</li>
+                <li style="background-color: #FFFF00;"></li>
+            </ul>
+            <ul>
+                <li>GreenStone Route</li>
+                <li style="background-color: #00CC00;"></li>
+            </ul>
+            <ul>
+                <li>HighVield Route</li>
+                <li style="background-color: #FF0000;"></li>
+            </ul>
+            <ul>
+                <li>Kelvin Route</li>
+                <li style="background-color: #8B0074;"></li>
+            </ul>
+            <ul>
+                <li>LinbroBusinessPark Route</li>
+                <li style="background-color: #5900a6;"></li>
+            </ul>
+            <ul>
+                <li>Midstream Route</li>
+                <li style="background-color: #8B0074;"></li>
+            </ul>
+            <ul>
+                <li>Queenswood Route</li>
+                <li style="background-color: #800000;"></li>
+            </ul>
+            <ul>
+                <li>WoodLands</li>
+                <li style="background-color: #FF0066;"></li>
+            </ul>
+        </div>
+        <div id="map"></div>
+        <div class="footer"></div>
+    </div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiaW50ZWxsZXJneSIsImEiOiJja2h1YWR6YTMwaWxpMnpvM2RqZGtseDY1In0.1xADnFuRD1ip12QzF83xuQ';
+        var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/intellergy/ckhxcpsqf0pos19r9ff8f7r0q',
+            center: [28.187437, -25.87559471],
+            zoom: 9.5
+        });
+
+        var trip_entries = {
+            t1: {
+                trip_id: "1",
+                routeColor: "#FFFF00",
+                trip_geojson: [
+                    [28.09654, -26.05914],
+                    [28.09877, -26.05568],
+                    [28.09884, -26.05184],
+                    [28.10259, -26.04608],
+                    [28.10914805, -26.04389902],
+                    [28.10572, -26.0474],
+                    [28.10315, -26.04915],
+                    [28.10745, -26.05118],
+                    [28.10991, -26.05039],
+                    [28.11434957, -26.05140217],
+                    [28.11766497, -26.05461536],
+                    [28.11551702, -26.0565817],
+                    [28.11287416, -26.05684435],
+                    [28.11046, -26.0571],
+                    [28.10784, -26.05688],
+                    [28.10299, -26.05764],
+                    [28.10051, -26.06045],
+                    [28.09915, -26.0613],
+                    [28.09638, -26.06149]
+                ]
+            },
+            t2: {
+                trip_id: "2",
+                routeColor: "#00CC00",
+                trip_geojson: [
+                    [28.13253186, -26.08874847],
+                    [28.13259878, -26.10130932],
+                    [28.13646175, -26.10918014],
+                    [28.13607665, -26.11279254],
+                    [28.13686629, -26.1168142],
+                    [28.14788486, -26.11247178],
+                    [28.14848278, -26.11717425],
+                    [28.15464614, -26.11834862],
+                    [28.15734, -26.11841],
+                    [28.14494016, -26.12233447],
+                    [28.14176373, -26.12221948],
+                    [28.14344554, -26.11811757],
+                    [28.14403379, -26.11375673],
+                    [28.13808638, -26.11568115],
+                    [28.1358753, -26.11270452],
+                    [28.13625035, -26.10925253],
+                    [28.13216381, -26.10164999],
+                    [28.13230013, -26.08870262]
+                ]
+            },
+            t3: {
+                trip_id: "3",
+                routeColor: "#FF0000",
+                trip_geojson: [
+                    [28.187437, -25.87559471],
+                    [28.18480763, -25.87886735],
+                    [28.18442615, -25.88050015],
+                    [28.18290674, -25.87979466],
+                    [28.18460801, -25.87873043],
+                    [28.18707075, -25.87564406]
+                ]
+            },
+            t4: {
+                trip_id: "4",
+                routeColor: "#8B0074",
+                trip_geojson: [
+                    [28.09881913, -26.07708282],
+                    [28.09930653, -26.07935458],
+                    [28.10129257, -26.08248217],
+                    [28.09794586, -26.08457397],
+                    [28.09748693, -26.08279606],
+                    [28.09585799, -26.0810159],
+                    [28.09376553, -26.07867605],
+                    [28.09138588, -26.07714277],
+                    [28.09264429, -26.08208708],
+                    [28.09309836, -26.07466241],
+                    [28.09532369, -26.07524896],
+                    [28.09834114, -26.07699375]
+                ]
+            },
+            t5: {
+                trip_id: "5",
+                routeColor: "#5900a6",
+                trip_geojson: [
+                    [28.117689, -26.080363],
+                    [28.117092, -26.07881],
+                    [28.115457, -26.078223],
+                    [28.114599, -26.075421],
+                    [28.113875, -26.072409],
+                    [28.11328808, -26.0706607],
+                    [28.114729, -26.068222],
+                    [28.11535921, -26.06709977],
+                    [28.112474, -26.064381],
+                    [28.110715, -26.063927],
+                    [28.11505645, -26.06315488],
+                    [28.11585103, -26.0629687],
+                    [28.11430181, -26.06379181],
+                    [28.1155057, -26.06698077],
+                    [28.11599593, -26.06905983],
+                    [28.11623952, -26.07167663],
+                    [28.1164431, -26.07396486],
+                    [28.11660398, -26.07616951],
+                    [28.11676945, -26.0782459]
+                ]
+            },
+            t6: {
+                trip_id: "6",
+                routeColor: "#8B0074",
+                trip_geojson: [
+                    [28.18389571, -25.91433287],
+                    [28.18230192, -25.92687249],
+                    [28.18059418, -25.92581999],
+                    [28.19053937, -25.92495283],
+                    [28.19198704, -25.92117179],
+                    [28.19654685, -25.91884942],
+                    [28.19510148, -25.91628642],
+                    [28.19336759, -25.9144777],
+                    [28.18704334, -25.91382182]
+                ]
+            },
+            t7: {
+                trip_id: "7",
+                routeColor: "#800000",
+                trip_geojson: [
+                    [28.24200000, -25.74125000],
+                    [28.24337703, -25.73304473],
+                    [28.23414327, -25.73370220],
+                    [28.24385208, -25.73284976],
+                    [28.24709572, -25.73283594],
+                    [28.24804170, -25.72895011],
+                    [28.24592933, -25.73002658],
+                    [28.24327778, -25.74130556]
+                ]
+            },
+            t8: {
+                trip_id: "8",
+                routeColor: "#FF0066",
+                trip_geojson: [
+                    [28.09052869, -26.08946299],
+                    [28.08591667, -26.08263889],
+                    [28.08927778, -26.06916667],
+                    [28.083, -26.06636111],
+                    [28.08191667, -26.06438889],
+                    [28.08652778, -26.06305556],
+                    [28.08847222, -26.06119444],
+                    [28.08797222, -26.05913889],
+                    [28.08527778, -26.05880556],
+                    [28.08483473, -26.05752465],
+                    [28.08914555, -26.05704839],
+                    [28.08991667, -26.06147222],
+                    [28.08618749, -26.08267639],
+                    [28.09244444, -26.08986111]
+                ]
+            }
+        };
+
+        var stopsUrl = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/getAllBusStops";
+        var busCoordinates = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/trackingDetails?busId=all";
+
+        map.on("load", function () {
+            // Set route
+            $.each(trip_entries, function (key, value) {
+                // Add sources
+                map.addSource(value.trip_id, {
+                    type: "geojson",
+                    data: {
+                        type: "FeatureCollection",
+                        features: [
+                            {
+                                type: "Feature",
+                                geometry: {
+                                    type: "LineString",
+                                    coordinates: value.trip_geojson
+                                }
+                            }
+                        ]
+                    }
+                });
+
+                // Add layers
+                map.addLayer({
+                    id: value.trip_id,
+                    type: "line",
+                    source: value.trip_id,
+                    layout: {
+                        "line-join": "round",
+                        "line-cap": "round"
+                    },
+                    paint: {
+                        "line-color": value.routeColor,
+                        "line-width": 6
+                    }
+                });
+            });
+
+            // Displaying Image as Marker
+            map.loadImage(
+                "https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png",
+                function (error, image) {
+                    if (error) throw error;
+                    map.addImage("busIcon", image);
+                    map.addSource("point", {
+                        type: "geojson",
+                        data: {
+                            type: "FeatureCollection",
+                            features: [
+                                {
+                                    type: "Feature",
+                                    geometry: {
+                                        type: "Point",
+                                        coordinates: [28.09877, -26.05568],
+                                    },
+                                },
+                            ],
+                        },
+                    });
+                    map.addLayer({
+                        id: "points",
+                        type: "symbol",
+                        source: "point",
+                        layout: {
+                            "icon-image": "busIcon",
+                            "icon-size": 0.07,
+                        },
+                    });
+                }
+            );
+
+            var requestMarker = new XMLHttpRequest();
+            requestMarker.open("GET", stopsUrl, true);
+            requestMarker.open;
+            requestMarker.onload = async function () {
+                if (this.status >= 200 && this.status < 400) {
+                    json = JSON.parse(this.response);
+                    var geojson = {
+                        features: json.results.features,
+                    };
+                    geojson.features.forEach((markers) => {
+                        markers.forEach((marker, index) => {
+                            var el = document.createElement("div");
+                            el.className = "marker";
+                            el.innerHTML = index + 1;
+                            el.style.cssText = "background-color:#140628; color: white; text-align: center; width: 20px; height: 20px";
+                            el.addEventListener("click", function () {
+                                window.alert(`${marker.message}`);
+                            });
+                            new mapboxgl.Marker(el).setLngLat([marker.geometry.coordinates[1], marker.geometry.coordinates[0]]).addTo(map);
+                        });
+                        return;
+                    });
+                }
+            };
+            requestMarker.send();
+
+            var requestBusCoordinates = new XMLHttpRequest();
+            window.setInterval(() => {
+                requestBusCoordinates.open("GET", busCoordinates, true);
+                requestBusCoordinates.open;
+                requestBusCoordinates.onload = async function () {
+                    if (this.status >= 200 && this.status < 400) {
+                        json = JSON.parse(this.response);
+                        var busCoordinates = json.location;
+                        busCoordinates.forEach((coords, index) => {
+                            var el = document.createElement("div");
+                            el.className = "busMarker";
+                            el.innerHTML = index + 1;
+                            el.addEventListener("click", function () {
+                                console.log(coords.busInfo)
+                                window.alert(`BusId: ${coords.busInfo.busId}\nBusName: ${coords.busInfo.busName}`);
+                            });
+                            new mapboxgl.Marker(el).setLngLat(coords.geometry.coordinates).addTo(map);
+                        });
+                    }
+                };
+                requestBusCoordinates.send();
+            }, 30000);
+        });
+
+        var scale = new mapboxgl.ScaleControl({
+            maxWidth: 80,
+            unit: 'imperial'
+        });
+
+        map.addControl(scale);
+        map.addControl(new mapboxgl.NavigationControl());
+        scale.setUnit('metric');
+        map.addControl(new mapboxgl.FullscreenControl());
+
+    </script>

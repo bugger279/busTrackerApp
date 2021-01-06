@@ -1,0 +1,64 @@
+<script>
+
+var trip_entries = {
+    t2: {
+      trip_id: "trip-entry-2",
+      trip_geojson: [
+        [-0.15591514, 51.51830379],
+        [-0.07571203, 51.51424049],
+        [-0.08533793, 51.50438536],
+        [-0.085793, 51.5036],
+        [-0.084793, 51.503336],
+        [-0.089793, 51.505336]
+      ]
+    },
+    t3: {
+      trip_id: "trip-entry-3",
+      trip_geojson: [
+        [-0.15514, 51.518],
+        [-0.075703, 51.515],
+        [-0.085793, 51.5],
+        [-0.0793, 51.506],
+        [-0.08473, 51.50336],
+        [-0.0893, 51.536]
+      ]
+    }
+  };
+  
+  map.on("load", function () {
+    // Set route
+    $.each(trip_entries, function (key, value) {
+      // Add sources
+      map.addSource(value.trip_id, {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "LineString",
+                coordinates: value.trip_geojson
+              }
+            }
+          ]
+        }
+      });
+  
+      // Add layers
+      map.addLayer({
+        id: value.trip_id,
+        type: "line",
+        source: value.trip_id,
+        layout: {
+          "line-join": "round",
+          "line-cap": "round"
+        },
+        paint: {
+          "line-color": "rgb(160,160,160)",
+          "line-width": 6
+        }
+      });
+    });
+  });
+</script>

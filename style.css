@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+body { font-family: 'Roboto', sans-serif; }
+.logo { font-size: 26px; font-weight: bold; }
+.links a { text-decoration: none; color: #fff; margin-left: 25px; font-weight: bold;  }
+
+.busMarker { 
+    z-index: 0;
+    color: #fff;
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    font-weight: 600;
+}
+
+.busMarker:before {
+    content: '';
+    position: absolute;
+    border-radius: 50% 50% 50% 0;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    background-color: rebeccapurple;
+    width: 25px;
+    height: 25px;
+    z-index: -1;
+    left: 0;
+    right: 0;
+    margin: auto;
+    top: -2px;
+}
+
+.mapboxgl-ctrl-top-right {
+    top: unset !important;
+    bottom: 30px !important;
+}
+.container {
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+.header {
+    z-index: 1;
+    background: #161616;
+    width: 100%;
+    position: relative;
+    padding: 20px 0;
+}
+
+.hear-wrapper {
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+}
+
+.legends {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    border-radius: 21px;
+    padding: 10px 20px;
+    left: 20px;
+    top: 20px;
+    max-width: 280px;
+    width: 100%;
+}
+
+.legends ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+.legends ul li {
+    flex: 1;
+    padding: 8px 0;
+}
+
+.legends ul li:last-child {
+    border-radius: 41px;
+    margin-left: 10px;
+}
