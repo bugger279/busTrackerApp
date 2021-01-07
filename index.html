@@ -1,252 +1,470 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8" />
-  <title>Fit to the bounds of a LineString</title>
+  <title>View a fullscreen map</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css" rel="stylesheet" />
-  <style>
-    body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-  </style>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
+  <script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/jquery-ui.js" type="text/javascript"></script>
+  <link href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/themes/blitzer/jquery-ui.css" rel="stylesheet"
+    type="text/css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <style>
-    .btn-control { font: bold 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif; background-color: #3386c0; color: #fff; position: absolute; top: 20px; left: 50%; z-index: 1; border: none; width: 200px; margin-left: -100px; display: block; cursor: pointer; padding: 10px 20px; border-radius: 3px; }
-    .btn-control:hover { background-color: #4ea0da; }
-  </style>
-  <div id="map"></div>
+  <div class="map-container">
+    <div class="header">
+      <div class="container">
+        <div class="hear-wrapper">
+          <div class="logo">Bus Tracker</div>
+          <div id="dialog" title="Dialog Title">
+            <div id="dialogContent"></div>
+          </div>
+          <div id="dropDown">
+            <select id="optionId">
+              <option value="all">None</option>
+              <span id=""></span>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="legends">
+      <ul>
+        <li>Buccleuch Route</li>
+        <li style="background-color: #FFFF00;"></li>
+      </ul>
+      <ul>
+        <li>GreenStone Route</li>
+        <li style="background-color: #00CC00;"></li>
+      </ul>
+      <ul>
+        <li>HighVield Route</li>
+        <li style="background-color: #FF0000;"></li>
+      </ul>
+      <ul>
+        <li>Kelvin Route</li>
+        <li style="background-color: #8B0074;"></li>
+      </ul>
+      <ul>
+        <li>LinbroBusinessPark Route</li>
+        <li style="background-color: #5900a6;"></li>
+      </ul>
+      <ul>
+        <li>Midstream Route</li>
+        <li style="background-color: #8B0074;"></li>
+      </ul>
+      <ul>
+        <li>Queenswood Route</li>
+        <li style="background-color: #800000;"></li>
+      </ul>
+      <ul>
+        <li>WoodLands</li>
+        <li style="background-color: #FF0066;"></li>
+      </ul>
+    </div>
+    <div id="map"></div>
+  </div>
   <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoiaW50ZWxsZXJneSIsImEiOiJja2h1YWR6YTMwaWxpMnpvM2RqZGtseDY1In0.1xADnFuRD1ip12QzF83xuQ';
+    var busId = "all";
 
-    var geojson = {
-      'type': 'FeatureCollection',
-      'features': [
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'properties': {},
-            'coordinates': [
-              [28.0881666664802, -26.0628055554645],
-              [28.0819166669059, -26.0643888888318],
-              [28.0859166663513, -26.0826388889999],
-              [28.083000000307, -26.0663611115386],
-              [28.0905286902909, -26.0894629904042],
-              [28.0892777777622, -26.0691666670248],
-              [28.0865277774292, -26.0630555554144],
-              [28.0879722226855, -26.0591388888884],
-              [28.0884722226955, -26.0611944448114],
-              [28.0852777776168, -26.058805555813],
-              [28.089145549001, -26.0570483933425],
-              [28.0899166665956, -26.0614722226071],
-              [28.092444444432, -26.0898611113731],
-              [28.0861874928188, -26.0826763947471],
-              [28.0848347346655, -26.0575246487761]
-            ],
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'properties': {},
-            'coordinates': [
-              [28.0965399996452, -26.0591400003713],
-              [28.0987699998997, -26.0556799997977],
-              [28.0988399997837, -26.0518399998865],
-              [28.1025900001419, -26.0460800004475],
-              [28.1091480506841, -26.043899021233],
-              [28.105719999955, -26.0474000003591],
-              [28.103150000374, -26.0491499997209],
-              [28.1074499997586, -26.0511799999167],
-              [28.1099100000417, -26.0503900003298],
-              [28.1143495667517, -26.0514021705287],
-              [28.1176649687348, -26.0546153596214],
-              [28.1128741606667, -26.0568443468306],
-              [28.1104599999961, -26.0571000001022],
-              [28.1078400001184, -26.0568799995788],
-              [28.102990000005, -26.0576399996646],
-              [28.1005100004633, -26.0604499998742],
-              [28.0991499998163, -26.0613000003598],
-              [28.0963800003968, -26.0614900002535],
-              [28.115517015055, -26.05658170197722]
-            ],
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'properties': {},
-            'coordinates': [
-              [28.1874370049726, -25.8755947129315],
-              [28.1848076253572, -25.8788673528888],
-              [28.1844261529733, -25.8805001452331],
-              [28.1829067392467, -25.8797946619585],
-              [28.1846080060594, -25.8787304321043],
-              [28.1870707452931, -25.8756440617047]
-            ],
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'properties': {},
-            'coordinates': [
-              [28.0988191270921, -26.0770828215371],
-              [28.0979458603485, -26.0845739743857],
-              [28.097486931511, -26.0827960561339],
-              [28.0958579934381, -26.0810159032429],
-              [28.0937655262264, -26.078676054837],
-              [28.0913858757493, -26.0771427654178],
-              [28.0930983636105, -26.0746624075276],
-              [28.0953236875724, -26.0752489631977],
-              [28.1012925695727, -26.0824821681754],
-              [28.0983411353233, -26.076993752002],
-              [28.0993065254288, -26.0793545793116],
-              [28.0926442935261, -26.0820870761421]
-            ],
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'properties': {},
-            'coordinates': [
-              [28.1176889997586, -26.0803629997811],
-              [28.1170920005271, -26.0788100007127],
-              [28.115456999899, -26.0782229998727],
-              [28.1145989998139, -26.0754209998692],
-              [28.1138750002594, -26.0724089998181],
-              [28.1132880766693, -26.0706607006948],
-              [28.1147289998304, -26.0682220006542],
-              [28.1153592145376, -26.0670997702111],
-              [28.1124739998842, -26.0643810002299],
-              [28.1107149999213, -26.0639270003741],
-              [28.1150564475808, -26.0631548762306],
-              [28.1158510301214, -26.0629687043431],
-              [28.114301813777, -26.0637918066733],
-              [28.115505703342, -26.066980774165],
-              [28.1159959345342, -26.0690598299145],
-              [28.1162395186544, -26.0716766316874],
-              [28.1164431028945, -26.0739648572836],
-              [28.1166039826573, -26.0761695057634],
-              [28.1167694549375, -26.0782458982607]
-            ],
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'properties': {},
-            'coordinates': [
-              [28.2419999999466, -25.7412500003417],
-              [28.2432777780092, -25.7413055558886],
-              [28.243377031741, -25.7330447258948],
-              [28.2341432732832, -25.7337022044057],
-              [28.2438520768846, -25.7328497640868],
-              [28.2470957230585, -25.732835940107],
-              [28.2480417032373, -25.728950108982],
-              [28.2459293343275, -25.7300265833391]
-            ],
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'properties': {},
-            'coordinates': [
-              [28.1325318579456, -26.0887484679876],
-              [28.1325987845196, -26.1013093221188],
-              [28.1364617499933, -26.1091801402829],
-              [28.1360766504123, -26.1127925398161],
-              [28.136866293673, -26.1168141976726],
-              [28.1478848602811, -26.1124717798522],
-              [28.1484827795114, -26.1171742498561],
-              [28.1546461428265, -26.1183486223406],
-              [28.1573399995031, -26.1184100001963],
-              [28.1449401604105, -26.1223344696893],
-              [28.14176372977, -26.1222194797135],
-              [28.1434455398063, -26.1181175702041],
-              [28.1440337895052, -26.113756729791],
-              [28.138086379701, -26.1156811498139],
-              [28.1358753000858, -26.1127045198499],
-              [28.1362503504809, -26.1092525301456],
-              [28.1321638148049, -26.1016499878618],
-              [28.1323001276397, -26.088702623008]
-            ],
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'properties': {},
-            'coordinates': [
-              [28.1838957053177, -25.9143328672331],
-              [28.1823019179199, -25.9268724874916],
-              [28.180594175997, -25.9258199883263],
-              [28.1905393726058, -25.9249528256346],
-              [28.1919870403514, -25.9211717892182],
-              [28.1965468528171, -25.9188494199229],
-              [28.1951014810183, -25.91628641737],
-              [28.1933675937701, -25.9144776999772],
-              [28.1870433412931, -25.9138218152019]
-            ],
-          }
-        }
-      ]
+    jQuery.browser = {};
+    (function () {
+      jQuery.browser.msie = false;
+      jQuery.browser.version = 0;
+      if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+        jQuery.browser.msie = true;
+        jQuery.browser.version = RegExp.$1;
+      }
+    })();
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaW50ZWxsZXJneSIsImEiOiJja2h1YWR6YTMwaWxpMnpvM2RqZGtseDY1In0.1xADnFuRD1ip12QzF83xuQ';
+    var map = new mapboxgl.Map({
+      container: 'map', // container id
+      style: 'mapbox://styles/intellergy/ckhxcpsqf0pos19r9ff8f7r0q',
+      center: [28.187437, -25.87559471],
+      zoom: 9.5
+    });
+
+    var trip_entries = {
+      t1: {
+        trip_id: "1",
+        routeColor: "#FFFF00",
+        trip_geojson: [
+          [28.09654, -26.05914],
+          [28.09877, -26.05568],
+          [28.09884, -26.05184],
+          [28.10259, -26.04608],
+          [28.10914805, -26.04389902],
+          [28.10572, -26.0474],
+          [28.10315, -26.04915],
+          [28.10745, -26.05118],
+          [28.10991, -26.05039],
+          [28.11434957, -26.05140217],
+          [28.11766497, -26.05461536],
+          [28.11551702, -26.0565817],
+          [28.11287416, -26.05684435],
+          [28.11046, -26.0571],
+          [28.10784, -26.05688],
+          [28.10299, -26.05764],
+          [28.10051, -26.06045],
+          [28.09915, -26.0613],
+          [28.09638, -26.06149]
+        ]
+      },
+      t2: {
+        trip_id: "2",
+        routeColor: "#00CC00",
+        trip_geojson: [
+          [28.13253186, -26.08874847],
+          [28.13259878, -26.10130932],
+          [28.13646175, -26.10918014],
+          [28.13607665, -26.11279254],
+          [28.13686629, -26.1168142],
+          [28.14788486, -26.11247178],
+          [28.14848278, -26.11717425],
+          [28.15464614, -26.11834862],
+          [28.15734, -26.11841],
+          [28.14494016, -26.12233447],
+          [28.14176373, -26.12221948],
+          [28.14344554, -26.11811757],
+          [28.14403379, -26.11375673],
+          [28.13808638, -26.11568115],
+          [28.1358753, -26.11270452],
+          [28.13625035, -26.10925253],
+          [28.13216381, -26.10164999],
+          [28.13230013, -26.08870262]
+        ]
+      },
+      t3: {
+        trip_id: "3",
+        routeColor: "#FF0000",
+        trip_geojson: [
+          [28.187437, -25.87559471],
+          [28.18480763, -25.87886735],
+          [28.18442615, -25.88050015],
+          [28.18290674, -25.87979466],
+          [28.18460801, -25.87873043],
+          [28.18707075, -25.87564406]
+        ]
+      },
+      t4: {
+        trip_id: "4",
+        routeColor: "#8B0074",
+        trip_geojson: [
+          [28.09881913, -26.07708282],
+          [28.09930653, -26.07935458],
+          [28.10129257, -26.08248217],
+          [28.09794586, -26.08457397],
+          [28.09748693, -26.08279606],
+          [28.09585799, -26.0810159],
+          [28.09376553, -26.07867605],
+          [28.09138588, -26.07714277],
+          [28.09264429, -26.08208708],
+          [28.09309836, -26.07466241],
+          [28.09532369, -26.07524896],
+          [28.09834114, -26.07699375]
+        ]
+      },
+      t5: {
+        trip_id: "5",
+        routeColor: "#5900a6",
+        trip_geojson: [
+          [28.117689, -26.080363],
+          [28.117092, -26.07881],
+          [28.115457, -26.078223],
+          [28.114599, -26.075421],
+          [28.113875, -26.072409],
+          [28.11328808, -26.0706607],
+          [28.114729, -26.068222],
+          [28.11535921, -26.06709977],
+          [28.112474, -26.064381],
+          [28.110715, -26.063927],
+          [28.11505645, -26.06315488],
+          [28.11585103, -26.0629687],
+          [28.11430181, -26.06379181],
+          [28.1155057, -26.06698077],
+          [28.11599593, -26.06905983],
+          [28.11623952, -26.07167663],
+          [28.1164431, -26.07396486],
+          [28.11660398, -26.07616951],
+          [28.11676945, -26.0782459]
+        ]
+      },
+      t6: {
+        trip_id: "6",
+        routeColor: "#8B0074",
+        trip_geojson: [
+          [28.18389571, -25.91433287],
+          [28.18230192, -25.92687249],
+          [28.18059418, -25.92581999],
+          [28.19053937, -25.92495283],
+          [28.19198704, -25.92117179],
+          [28.19654685, -25.91884942],
+          [28.19510148, -25.91628642],
+          [28.19336759, -25.9144777],
+          [28.18704334, -25.91382182]
+        ]
+      },
+      t7: {
+        trip_id: "7",
+        routeColor: "#800000",
+        trip_geojson: [
+          [28.24200000, -25.74125000],
+          [28.24337703, -25.73304473],
+          [28.23414327, -25.73370220],
+          [28.24385208, -25.73284976],
+          [28.24709572, -25.73283594],
+          [28.24804170, -25.72895011],
+          [28.24592933, -25.73002658],
+          [28.24327778, -25.74130556]
+        ]
+      },
+      t8: {
+        trip_id: "8",
+        routeColor: "#FF0066",
+        trip_geojson: [
+          [28.09052869, -26.08946299],
+          [28.08591667, -26.08263889],
+          [28.08927778, -26.06916667],
+          [28.083, -26.06636111],
+          [28.08191667, -26.06438889],
+          [28.08652778, -26.06305556],
+          [28.08847222, -26.06119444],
+          [28.08797222, -26.05913889],
+          [28.08527778, -26.05880556],
+          [28.08483473, -26.05752465],
+          [28.08914555, -26.05704839],
+          [28.08991667, -26.06147222],
+          [28.08618749, -26.08267639],
+          [28.09244444, -26.08986111]
+        ]
+      }
     };
 
-    var map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/intellergy/ckhxcpsqf0pos19r9ff8f7r0q',
-      center: [28.0965399996452, -26.0591400003713],
-      zoom: 12
-    });
+    var stopsUrl = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/getAllBusStops";
+    var busCoordinates = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/trackingDetails?busId=all";
+    var busNames = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/getAllBuses";
+    var singleBus = `https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/busTrackingDetail?busId=`;
 
-    map.on('load', function () {
-      map.addSource('LineString', {
-        'type': 'geojson',
-        'data': geojson
-      });
-
-      geojson.features.forEach((coordinate) => {
-        map.addLayer({
-        'id': 'LineString',
-        'type': 'line',
-        'source': 'LineString',
-        'layout': {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        'paint': {
-          'line-color': `#000${Math.floor(Math.random() * 1000)}`,
-          'line-width': 1
-        }
-      });
-      });
-
-      document
-        .getElementById('zoomto')
-        .addEventListener('click', function () {
-          var coordinates = geojson.features[0].geometry.coordinates;
-          var bounds = coordinates.reduce(function (bounds, coord) {
-            return bounds.extend(coord);
-          }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-
-          map.fitBounds(bounds, {
-            padding: 20
-          });
+    var requestBusName = new XMLHttpRequest();
+    var $dropdown = $("#optionId");
+    requestBusName.open("GET", busNames, true);
+    requestBusName.open;
+    requestBusName.onload = async function () {
+      if (this.status >= 200 && this.status < 400) {
+        json = JSON.parse(this.response);
+        var busArray = json.results;
+        $.each(busArray.buses, function () {
+          $dropdown.append($("<option />").val(this.id).text(this.DeviceName));
         });
+        return;
+
+        geojson.features.forEach((markers) => {
+          markers.forEach((marker, index) => {
+            var el = document.createElement("div");
+            el.className = "marker";
+            el.innerHTML = index + 1;
+            el.addEventListener("click", function () {
+              window.alert(`${marker.message}`);
+            });
+            new mapboxgl.Marker(el).setLngLat([marker.geometry.coordinates[1], marker.geometry.coordinates[0]]).addTo(map);
+          });
+          return;
+        });
+      }
+    };
+    requestBusName.send();
+
+    map.on("load", function () {
+      // Set route
+      $.each(trip_entries, function (key, value) {
+        // Add sources
+        map.addSource(value.trip_id, {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                geometry: {
+                  type: "LineString",
+                  coordinates: value.trip_geojson
+                }
+              }
+            ]
+          }
+        });
+
+        // Add layers
+        map.addLayer({
+          id: value.trip_id,
+          type: "line",
+          source: value.trip_id,
+          layout: {
+            "line-join": "round",
+            "line-cap": "round"
+          },
+          paint: {
+            "line-color": value.routeColor,
+            "line-width": 6
+          }
+        });
+      });
+
+      // Displaying Image as Marker
+      map.loadImage(
+        "https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png",
+        function (error, image) {
+          if (error) throw error;
+          map.addImage("busIcon", image);
+          map.addSource("point", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [
+                {
+                  type: "Feature",
+                  geometry: {
+                    type: "Point",
+                    coordinates: [28.09877, -26.05568],
+                  },
+                },
+              ],
+            },
+          });
+          map.addLayer({
+            id: "points",
+            type: "symbol",
+            source: "point",
+            layout: {
+              "icon-image": "busIcon",
+              "icon-size": 0.07,
+            },
+          });
+        }
+      );
+
+      var requestMarker = new XMLHttpRequest();
+      requestMarker.open("GET", stopsUrl, true);
+      requestMarker.open;
+      requestMarker.onload = async function () {
+        if (this.status >= 200 && this.status < 400) {
+          json = JSON.parse(this.response);
+          var geojson = {
+            features: json.results.features,
+          };
+          geojson.features.forEach((markers) => {
+            markers.forEach((marker, index) => {
+              var el = document.createElement("div");
+              el.className = "marker";
+              el.innerHTML = index + 1;
+              el.style.cssText = "background-color:#140628; color: white; text-align: center; width: 20px; height: 20px";
+              el.addEventListener("click", function () {
+                window.alert(`${marker.message}`);
+              });
+              new mapboxgl.Marker(el).setLngLat([marker.geometry.coordinates[1], marker.geometry.coordinates[0]]).addTo(map);
+            });
+            return;
+          });
+        }
+      };
+      requestMarker.send();
+
+      $(function () {
+        $("#dialog").dialog({
+          modal: true,
+          autoOpen: false,
+          title: "Bus Info",
+          width: 300,
+          height: 150
+        });
+      });
+
+      var requestBusCoordinates = new XMLHttpRequest();
+      function getAllBusLiveLocation() {
+        requestBusCoordinates.open("GET", busCoordinates, true);
+        requestBusCoordinates.open;
+        requestBusCoordinates.onload = async function () {
+          if (this.status >= 200 && this.status < 400) {
+            json = JSON.parse(this.response);
+            var busCoordinates = json.location;
+            busCoordinates.forEach((coords, index) => {
+              var el = document.createElement("div");
+              el.className = "busMarker";
+              el.innerHTML = index + 1;
+              el.addEventListener("click", function () {
+                document.getElementById("dialogContent").innerHTML = `
+                                BusId: ${coords.busInfo.busId}<br>
+                                BusName: ${coords.busInfo.busName}
+                                `;
+                $('#dialog').dialog('open');
+              });
+              new mapboxgl.Marker(el).setLngLat(coords.geometry.coordinates).addTo(map);
+            });
+          }
+        };
+        requestBusCoordinates.send();
+      }
+
+      var requestSingleBusCoordinates = new XMLHttpRequest();
+      function getSingleBusCoordinate(busId) {
+        window.setInterval(function () {
+          requestSingleBusCoordinates.open('GET', singleBus + busId, true);
+          console.log(singleBus + this.value);
+          requestSingleBusCoordinates.open
+          requestSingleBusCoordinates.onload = function () {
+            if (this.status >= 200 && this.status < 400) {
+              var json = JSON.parse(this.response);
+              console.log(json);
+              map.getSource(`busId-${busId}`).setData(json);
+              console.log(json.geometry.coordinates);
+              map.flyTo({
+                center: json.geometry.coordinates,
+                speed: 0.5
+              });
+            }
+          };
+          requestSingleBusCoordinates.send();
+        }, 2000);
+
+        map.addSource(`busId-${busId}`, { type: 'geojson', data: singleBus + busId });
+        map.addLayer({
+          'id': `busId-${busId}`,
+          'type': 'symbol',
+          'source': `busId-${busId}`,
+          'layout': {
+            'icon-image': 'rocket-15'
+          }
+        });
+      }
+
+      var intervalAll = window.setInterval(() => {
+        getAllBusLiveLocation();
+      }, 3000);
+
+      // $('#optionId').on('change', function() {
+      //     if (this.value === "all") {
+      //         window.setInterval(() => {
+      //             getAllBusLiveLocation();
+      //         }, 3000);
+      //     } else {
+      //         getSingleBusCoordinate(this.value);
+      //     }
+      // });
     });
+
+    var scale = new mapboxgl.ScaleControl({
+      maxWidth: 80,
+      unit: 'imperial'
+    });
+
+    map.addControl(scale);
+    map.addControl(new mapboxgl.NavigationControl());
+    scale.setUnit('metric');
+    map.addControl(new mapboxgl.FullscreenControl());
+
   </script>
-</body>
-</html>
