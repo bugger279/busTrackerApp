@@ -10,8 +10,8 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/jquery-ui.js" type="text/javascript"></script>
-    <link href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/themes/blitzer/jquery-ui.css"
-    rel="stylesheet" type="text/css" />
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/themes/blitzer/jquery-ui.css" rel="stylesheet"
+        type="text/css" />
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -252,32 +252,32 @@
 
         var requestBusName = new XMLHttpRequest();
         var $dropdown = $("#optionId");
-            requestBusName.open("GET", busNames, true);
-            requestBusName.open;
-            requestBusName.onload = async function () {
-                if (this.status >= 200 && this.status < 400) {
-                    json = JSON.parse(this.response);
-                    var busArray = json.results;
-                    $.each(busArray.buses, function() {
-                        $dropdown.append($("<option />").val(this.id).text(this.DeviceName));
+        requestBusName.open("GET", busNames, true);
+        requestBusName.open;
+        requestBusName.onload = async function () {
+            if (this.status >= 200 && this.status < 400) {
+                json = JSON.parse(this.response);
+                var busArray = json.results;
+                $.each(busArray.buses, function () {
+                    $dropdown.append($("<option />").val(this.id).text(this.DeviceName));
+                });
+                return;
+
+                geojson.features.forEach((markers) => {
+                    markers.forEach((marker, index) => {
+                        var el = document.createElement("div");
+                        el.className = "marker";
+                        el.innerHTML = index + 1;
+                        el.addEventListener("click", function () {
+                            window.alert(`${marker.message}`);
+                        });
+                        new mapboxgl.Marker(el).setLngLat([marker.geometry.coordinates[1], marker.geometry.coordinates[0]]).addTo(map);
                     });
                     return;
-
-                    geojson.features.forEach((markers) => {
-                        markers.forEach((marker, index) => {
-                            var el = document.createElement("div");
-                            el.className = "marker";
-                            el.innerHTML = index + 1;
-                            el.addEventListener("click", function () {
-                                window.alert(`${marker.message}`);
-                            });
-                            new mapboxgl.Marker(el).setLngLat([marker.geometry.coordinates[1], marker.geometry.coordinates[0]]).addTo(map);
-                        });
-                        return;
-                    });
-                }
-            };
-            requestBusName.send();        
+                });
+            }
+        };
+        requestBusName.send();
 
         map.on("load", function () {
             // Set route
@@ -444,7 +444,7 @@
 
             var intervalAll = window.setInterval(() => {
                 getAllBusLiveLocation();
-            }, 3000);            
+            }, 3000);
 
             // $('#optionId').on('change', function() {
             //     if (this.value === "all") {
