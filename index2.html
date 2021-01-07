@@ -5,9 +5,13 @@
     <meta charset="utf-8" />
     <title>View a fullscreen map</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/jquery-ui.js" type="text/javascript"></script>
+    <link href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/themes/blitzer/jquery-ui.css"
+    rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -17,6 +21,9 @@
             <div class="container">
                 <div class="hear-wrapper">
                     <div class="logo">Bus Tracker</div>
+                    <div id="dialog" title="Dialog Title">
+                        <div id="dialogContent"></div>
+                    </div>
                     <div id="dropDown">
                         <select id="optionId">
                             <option value="all">None</option>
@@ -63,6 +70,17 @@
         <div id="map"></div>
     </div>
     <script>
+        var busId = "all";
+
+        jQuery.browser = {};
+        (function () {
+            jQuery.browser.msie = false;
+            jQuery.browser.version = 0;
+            if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+                jQuery.browser.msie = true;
+                jQuery.browser.version = RegExp.$1;
+            }
+        })();
         mapboxgl.accessToken = 'pk.eyJ1IjoiaW50ZWxsZXJneSIsImEiOiJja2h1YWR6YTMwaWxpMnpvM2RqZGtseDY1In0.1xADnFuRD1ip12QzF83xuQ';
         var map = new mapboxgl.Map({
             container: 'map', // container id
@@ -230,6 +248,7 @@
         var stopsUrl = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/getAllBusStops";
         var busCoordinates = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/trackingDetails?busId=all";
         var busNames = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/getAllBuses";
+        var singleBus = `https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/busTrackingDetail?busId=`;
 
         var requestBusName = new XMLHttpRequest();
         var $dropdown = $("#optionId");
@@ -355,6 +374,16 @@
             };
             requestMarker.send();
 
+            $(function () {
+                $("#dialog").dialog({
+                    modal: true,
+                    autoOpen: false,
+                    title: "Bus Info",
+                    width: 300,
+                    height: 150
+                });
+            });
+
             var requestBusCoordinates = new XMLHttpRequest();
             function getAllBusLiveLocation() {
                 requestBusCoordinates.open("GET", busCoordinates, true);
@@ -368,7 +397,11 @@
                             el.className = "busMarker";
                             el.innerHTML = index + 1;
                             el.addEventListener("click", function () {
-                                window.alert(`BusId: ${coords.busInfo.busId}\nBusName: ${coords.busInfo.busName}`);
+                                document.getElementById("dialogContent").innerHTML = `
+                                BusId: ${coords.busInfo.busId}<br>
+                                BusName: ${coords.busInfo.busName}
+                                `;
+                                $('#dialog').dialog('open');
                             });
                             new mapboxgl.Marker(el).setLngLat(coords.geometry.coordinates).addTo(map);
                         });
@@ -376,10 +409,52 @@
                 };
                 requestBusCoordinates.send();
             }
-            
-            window.setInterval(() => {
+
+            var requestSingleBusCoordinates = new XMLHttpRequest();
+            function getSingleBusCoordinate(busId) {
+                window.setInterval(function () {
+                    requestSingleBusCoordinates.open('GET', singleBus + busId, true);
+                    console.log(singleBus + this.value);
+                    requestSingleBusCoordinates.open
+                    requestSingleBusCoordinates.onload = function () {
+                        if (this.status >= 200 && this.status < 400) {
+                            var json = JSON.parse(this.response);
+                            console.log(json);
+                            map.getSource(`busId-${busId}`).setData(json);
+                            console.log(json.geometry.coordinates);
+                            map.flyTo({
+                                center: json.geometry.coordinates,
+                                speed: 0.5
+                            });
+                        }
+                    };
+                    requestSingleBusCoordinates.send();
+                }, 2000);
+
+                map.addSource(`busId-${busId}`, { type: 'geojson', data: singleBus + busId });
+                map.addLayer({
+                    'id': `busId-${busId}`,
+                    'type': 'symbol',
+                    'source': `busId-${busId}`,
+                    'layout': {
+                        'icon-image': 'rocket-15'
+                    }
+                });
+            }
+
+            var intervalAll = window.setInterval(() => {
                 getAllBusLiveLocation();
-            }, 3000);
+            }, 3000);            
+
+            // $('#optionId').on('change', function() {
+            //     if (this.value === "all") {
+            //         window.setInterval(() => {
+            //             getAllBusLiveLocation();
+            //         }, 3000);
+            //     } else {
+            //         getSingleBusCoordinate(this.value);
+            //     }
+            // });
         });
 
         var scale = new mapboxgl.ScaleControl({
