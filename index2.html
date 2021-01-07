@@ -9,27 +9,6 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-        }
-
-        .marker {
-            display: block;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            padding: 0;
-        }
-    </style>
 </head>
 
 <body>
@@ -38,9 +17,11 @@
             <div class="container">
                 <div class="hear-wrapper">
                     <div class="logo">Bus Tracker</div>
-                    <div class="links">
-                        <a href="">Link 1</a>
-                        <a href="">Link 2</a>
+                    <div id="dropDown">
+                        <select id="optionId">
+                            <option value="all">None</option>
+                            <span id=""></span>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -80,7 +61,6 @@
             </ul>
         </div>
         <div id="map"></div>
-        <div class="footer"></div>
     </div>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiaW50ZWxsZXJneSIsImEiOiJja2h1YWR6YTMwaWxpMnpvM2RqZGtseDY1In0.1xADnFuRD1ip12QzF83xuQ';
@@ -249,6 +229,36 @@
 
         var stopsUrl = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/getAllBusStops";
         var busCoordinates = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/trackingDetails?busId=all";
+        var busNames = "https://eebml92o59.execute-api.af-south-1.amazonaws.com/dev/api/tracking/getAllBuses";
+
+        var requestBusName = new XMLHttpRequest();
+        var $dropdown = $("#optionId");
+            requestBusName.open("GET", busNames, true);
+            requestBusName.open;
+            requestBusName.onload = async function () {
+                if (this.status >= 200 && this.status < 400) {
+                    json = JSON.parse(this.response);
+                    var busArray = json.results;
+                    $.each(busArray.buses, function() {
+                        $dropdown.append($("<option />").val(this.id).text(this.DeviceName));
+                    });
+                    return;
+
+                    geojson.features.forEach((markers) => {
+                        markers.forEach((marker, index) => {
+                            var el = document.createElement("div");
+                            el.className = "marker";
+                            el.innerHTML = index + 1;
+                            el.addEventListener("click", function () {
+                                window.alert(`${marker.message}`);
+                            });
+                            new mapboxgl.Marker(el).setLngLat([marker.geometry.coordinates[1], marker.geometry.coordinates[0]]).addTo(map);
+                        });
+                        return;
+                    });
+                }
+            };
+            requestBusName.send();        
 
         map.on("load", function () {
             // Set route
@@ -346,7 +356,7 @@
             requestMarker.send();
 
             var requestBusCoordinates = new XMLHttpRequest();
-            window.setInterval(() => {
+            function getAllBusLiveLocation() {
                 requestBusCoordinates.open("GET", busCoordinates, true);
                 requestBusCoordinates.open;
                 requestBusCoordinates.onload = async function () {
@@ -358,7 +368,6 @@
                             el.className = "busMarker";
                             el.innerHTML = index + 1;
                             el.addEventListener("click", function () {
-                                console.log(coords.busInfo)
                                 window.alert(`BusId: ${coords.busInfo.busId}\nBusName: ${coords.busInfo.busName}`);
                             });
                             new mapboxgl.Marker(el).setLngLat(coords.geometry.coordinates).addTo(map);
@@ -366,7 +375,11 @@
                     }
                 };
                 requestBusCoordinates.send();
-            }, 30000);
+            }
+            
+            window.setInterval(() => {
+                getAllBusLiveLocation();
+            }, 3000);
         });
 
         var scale = new mapboxgl.ScaleControl({
