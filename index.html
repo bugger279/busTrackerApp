@@ -71,6 +71,10 @@
   </div>
   <script>
     var busId = "all";
+    var markArr = [];
+    var layerArr = [];
+    var sourceArr = [];
+    var intervalArray = [];
 
     jQuery.browser = {};
     (function () {
@@ -403,7 +407,8 @@
                                 `;
                 $('#dialog').dialog('open');
               });
-              new mapboxgl.Marker(el).setLngLat(coords.geometry.coordinates).addTo(map);
+              let marker = new mapboxgl.Marker(el).setLngLat(coords.geometry.coordinates).addTo(map);
+              markArr.push(marker);
             });
           }
         };
@@ -412,15 +417,17 @@
 
       var requestSingleBusCoordinates = new XMLHttpRequest();
       function getSingleBusCoordinate(busId) {
-        window.setInterval(function () {
+        let intervalOne = window.setInterval(function () {
           requestSingleBusCoordinates.open('GET', singleBus + busId, true);
-          console.log(singleBus + this.value);
+          console.log(singleBus + busId);
           requestSingleBusCoordinates.open
           requestSingleBusCoordinates.onload = function () {
             if (this.status >= 200 && this.status < 400) {
               var json = JSON.parse(this.response);
               console.log(json);
-              map.getSource(`busId-${busId}`).setData(json);
+              if (map.getSource(`busId-${busId}`)) {
+                map.getSource(`busId-${busId}`).setData(json);
+              }
               console.log(json.geometry.coordinates);
               map.flyTo({
                 center: json.geometry.coordinates,
@@ -429,31 +436,59 @@
             }
           };
           requestSingleBusCoordinates.send();
-        }, 2000);
+        }, 500000);
 
+        intervalArray.push(intervalOne);
         map.addSource(`busId-${busId}`, { type: 'geojson', data: singleBus + busId });
         map.addLayer({
           'id': `busId-${busId}`,
           'type': 'symbol',
           'source': `busId-${busId}`,
           'layout': {
-            'icon-image': 'rocket-15'
+            'icon-image': 'bus-15',
+            'icon-size': 3
           }
+        });
+        sourceArr.push(`busId-${busId}`);
+        layerArr.push(`busId-${busId}`);
+      }
+
+      function removeAllMarker() {
+        markArr.forEach((mark) => {
+          mark.remove();
         });
       }
 
+      function removeBusMarker() {
+        $('.busMarker').css("opacity", 0);
+        intervalArray.forEach(interval => {
+          clearInterval(interval);
+        });
+        layerArr.forEach((Layer) => {
+          map.removeLayer(Layer);
+        });
+        sourceArr.forEach((source) => {
+          map.removeSource(source);
+        });
+        layerArr = [];
+        sourceArr = [];
+      }
+
       var intervalAll = window.setInterval(() => {
+        // removeAllMarker();
         getAllBusLiveLocation();
       }, 3000);
 
       // $('#optionId').on('change', function() {
-      //     if (this.value === "all") {
-      //         window.setInterval(() => {
-      //             getAllBusLiveLocation();
-      //         }, 3000);
-      //     } else {
-      //         getSingleBusCoordinate(this.value);
-      //     }
+      //   removeBusMarker();
+      //   if (this.value === "all") {
+      //     removeAllMarker();
+      //     window.setInterval(() => {
+      //       getAllBusLiveLocation();
+      //     }, 3000);
+      //   } else {
+      //     getSingleBusCoordinate(this.value);
+      //   }
       // });
     });
 
