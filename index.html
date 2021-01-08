@@ -325,37 +325,37 @@
       });
 
       // Displaying Image as Marker
-      map.loadImage(
-        "https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png",
-        function (error, image) {
-          if (error) throw error;
-          map.addImage("busIcon", image);
-          map.addSource("point", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: [
-                {
-                  type: "Feature",
-                  geometry: {
-                    type: "Point",
-                    coordinates: [28.09877, -26.05568],
-                  },
-                },
-              ],
-            },
-          });
-          map.addLayer({
-            id: "points",
-            type: "symbol",
-            source: "point",
-            layout: {
-              "icon-image": "busIcon",
-              "icon-size": 0.07,
-            },
-          });
-        }
-      );
+      // map.loadImage(
+      //   "https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png",
+      //   function (error, image) {
+      //     if (error) throw error;
+      //     map.addImage("busIcon", image);
+      //     map.addSource("point", {
+      //       type: "geojson",
+      //       data: {
+      //         type: "FeatureCollection",
+      //         features: [
+      //           {
+      //             type: "Feature",
+      //             geometry: {
+      //               type: "Point",
+      //               coordinates: [28.09877, -26.05568],
+      //             },
+      //           },
+      //         ],
+      //       },
+      //     });
+      //     map.addLayer({
+      //       id: "points",
+      //       type: "symbol",
+      //       source: "point",
+      //       layout: {
+      //         "icon-image": "busIcon",
+      //         "icon-size": 0.07,
+      //       },
+      //     });
+      //   }
+      // );
 
       var requestMarker = new XMLHttpRequest();
       requestMarker.open("GET", stopsUrl, true);
