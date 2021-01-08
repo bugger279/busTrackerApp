@@ -16,6 +16,7 @@
 </head>
 
 <body>
+  <div class="pageloader"></div>
   <div class="map-container">
     <div class="header">
       <div class="container">
@@ -70,6 +71,10 @@
     <div id="map"></div>
   </div>
   <script>
+      $(window).load(function () {
+        $(".pageloader").fadeOut("slow");
+      });
+
     var busId = "all";
     var markArr = [];
     var layerArr = [];
@@ -436,7 +441,7 @@
             }
           };
           requestSingleBusCoordinates.send();
-        }, 500000);
+        }, 2000);
 
         intervalArray.push(intervalOne);
         map.addSource(`busId-${busId}`, { type: 'geojson', data: singleBus + busId });
