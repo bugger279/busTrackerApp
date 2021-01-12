@@ -71,9 +71,9 @@
     <div id="map"></div>
   </div>
   <script>
-      $(window).load(function () {
-        $(".pageloader").fadeOut("slow");
-      });
+    $(window).load(function () {
+      $(".pageloader").fadeOut("slow");
+    });
 
     var busId = "all";
     var markArr = [];
@@ -395,6 +395,7 @@
 
       var requestBusCoordinates = new XMLHttpRequest();
       function getAllBusLiveLocation() {
+        $(".busMarker").remove();
         requestBusCoordinates.open("GET", busCoordinates, true);
         requestBusCoordinates.open;
         requestBusCoordinates.onload = async function () {
@@ -450,7 +451,7 @@
           'type': 'symbol',
           'source': `busId-${busId}`,
           'layout': {
-            'icon-image': 'bus-15',
+            'icon-image': 'rocket-15',
             'icon-size': 3
           }
         });
@@ -459,13 +460,16 @@
       }
 
       function removeAllMarker() {
-        markArr.forEach((mark) => {
-          mark.remove();
-        });
+        // markArr.forEach((mark) => {
+        //   console.log("mark:", mark);
+        //   // mark.remove();
+        // });
+        // $(".busMarker").remove();
+        markArr = [];
       }
 
       function removeBusMarker() {
-        $('.busMarker').css("opacity", 0);
+        $('.busMarker').remove();
         intervalArray.forEach(interval => {
           clearInterval(interval);
         });
@@ -484,17 +488,30 @@
         removeAllMarker();
       }, 3000);
 
-      // $('#optionId').on('change', function() {
-      //   removeBusMarker();
-      //   if (this.value === "all") {
-      //     removeAllMarker();
-      //     window.setInterval(() => {
-      //       getAllBusLiveLocation();
-      //     }, 3000);
-      //   } else {
-      //     getSingleBusCoordinate(this.value);
-      //   }
-      // });
+      $('#optionId').on('change', function () {
+        clearInterval(intervalAll);
+        removeBusMarker();
+        removeAllMarker();
+        // if ($(".busMarker")) {
+        //   $(".busMarker").remove();
+        // } else {
+        //   const interval = setTimeout(() => {
+        //     console.log("timeOutCalled");
+        //     if ($(".busMarker")) {
+        //       $(".busMarker").remove();
+        //       clearTimeout(interval);
+        //     }
+        //   }, 500);
+        // }
+        if (this.value === "all") {
+          window.setInterval(() => {
+            getAllBusLiveLocation();
+            // removeAllMarker();
+          }, 3000);
+        } else {
+          getSingleBusCoordinate(this.value);
+        }
+      });
     });
 
     var scale = new mapboxgl.ScaleControl({
