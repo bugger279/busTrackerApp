@@ -394,8 +394,10 @@
       });
 
       var requestBusCoordinates = new XMLHttpRequest();
-      function getAllBusLiveLocation() {
-        $(".busMarker").remove();
+      function getAllBusLiveLocation(funcParam) {
+        if (funcParam  === true) {
+          console.log("funcParamTrue");
+          $(".busMarker").remove();
         requestBusCoordinates.open("GET", busCoordinates, true);
         requestBusCoordinates.open;
         requestBusCoordinates.onload = async function () {
@@ -419,22 +421,24 @@
           }
         };
         requestBusCoordinates.send();
+        } else {
+          console.log("funcParamFalse");
+          return;
+        }
       }
 
       var requestSingleBusCoordinates = new XMLHttpRequest();
       function getSingleBusCoordinate(busId) {
+        $(".busMarker").remove();
         let intervalOne = window.setInterval(function () {
           requestSingleBusCoordinates.open('GET', singleBus + busId, true);
-          console.log(singleBus + busId);
           requestSingleBusCoordinates.open
           requestSingleBusCoordinates.onload = function () {
             if (this.status >= 200 && this.status < 400) {
               var json = JSON.parse(this.response);
-              console.log(json);
               if (map.getSource(`busId-${busId}`)) {
                 map.getSource(`busId-${busId}`).setData(json);
               }
-              console.log(json.geometry.coordinates);
               map.flyTo({
                 center: json.geometry.coordinates,
                 speed: 0.5
@@ -461,15 +465,14 @@
 
       function removeAllMarker() {
         // markArr.forEach((mark) => {
-        //   console.log("mark:", mark);
-        //   // mark.remove();
+        //   mark.remove();
         // });
-        // $(".busMarker").remove();
+        console.log("remove all called");
+        $(".busMarker").remove();
         markArr = [];
       }
 
       function removeBusMarker() {
-        $('.busMarker').remove();
         intervalArray.forEach(interval => {
           clearInterval(interval);
         });
@@ -484,32 +487,56 @@
       }
 
       var intervalAll = window.setInterval(() => {
-        getAllBusLiveLocation();
+        console.log("repeated");
+        getAllBusLiveLocation(true);
         removeAllMarker();
       }, 3000);
 
-      $('#optionId').on('change', function () {
+      let intervalfunc = function intervalFunction(testParam) {
         clearInterval(intervalAll);
-        removeBusMarker();
-        removeAllMarker();
-        // if ($(".busMarker")) {
-        //   $(".busMarker").remove();
-        // } else {
-        //   const interval = setTimeout(() => {
-        //     console.log("timeOutCalled");
-        //     if ($(".busMarker")) {
-        //       $(".busMarker").remove();
-        //       clearTimeout(interval);
-        //     }
-        //   }, 500);
-        // }
-        if (this.value === "all") {
+        if (testParam === true) {
           window.setInterval(() => {
-            getAllBusLiveLocation();
-            // removeAllMarker();
+            getAllBusLiveLocation(true);
+            removeAllMarker();
           }, 3000);
         } else {
+          setTimeout(() => {
+            removeAllMarker();
+          }, 1000);
+          getAllBusLiveLocation(false);
+          return;
+        }
+      }
+
+      $('#optionId').on('change', function () {
+        removeBusMarker();
+        if ($(".busMarker")) {
+          console.log("There are markers");
+          $(".busMarker").remove();
+        } else {
+          console.log("There are NOOOO markers");
+          const interval = setTimeout(() => {
+            console.log("timeOutCalled");
+            if ($(".busMarker")) {
+              $(".busMarker").remove();
+              clearTimeout(interval);
+            }
+          }, 500);
+        }
+        if (this.value === "all") {
+          clearInterval(intervalAll);
+          // window.setInterval(() => {
+          //   getAllBusLiveLocation();
+          //   removeAllMarker();
+          // }, 3000);
+          intervalfunc(true);
+        } else {
+          console.log("else part");
+          clearInterval(intervalAll);
+          intervalfunc(false);
           getSingleBusCoordinate(this.value);
+          // $(".busMarker").remove();
+          // removeAllMarker();
         }
       });
     });
