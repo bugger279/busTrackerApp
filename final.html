@@ -34,43 +34,45 @@
                 </div>
             </div>
         </div>
-        <div class="legends">
-            <ul>
-                <li>Buccleuch Route</li>
-                <li style="background-color: #FFFF00;"></li>
-            </ul>
-            <ul>
-                <li>GreenStone Route</li>
-                <li style="background-color: #00CC00;"></li>
-            </ul>
-            <ul>
-                <li>HighVield Route</li>
-                <li style="background-color: #FF0000;"></li>
-            </ul>
-            <ul>
-                <li>Kelvin Route</li>
-                <li style="background-color: #8B0074;"></li>
-            </ul>
-            <ul>
-                <li>LinbroBusinessPark Route</li>
-                <li style="background-color: #5900a6;"></li>
-            </ul>
-            <ul>
-                <li>Midstream Route</li>
-                <li style="background-color: #8B0074;"></li>
-            </ul>
-            <ul>
-                <li>Queenswood Route</li>
-                <li style="background-color: #800000;"></li>
-            </ul>
-            <ul>
-                <li>WoodLands</li>
-                <li style="background-color: #FF0066;"></li>
-            </ul>
-        </div>
-        <div id="exceptionContainer">
-            <h2>Exceptions</h2>
-            <div id="exceptionContent"></div>
+        <div class="wrapper">
+            <div id="exceptionContainer">
+                <h2>Exceptions</h2>
+                <div id="exceptionContent"></div>
+            </div>
+            <div class="legends">
+                <ul>
+                    <li>Buccleuch Route</li>
+                    <li style="background-color: #FFFF00;"></li>
+                </ul>
+                <ul>
+                    <li>GreenStone Route</li>
+                    <li style="background-color: #00CC00;"></li>
+                </ul>
+                <ul>
+                    <li>HighVield Route</li>
+                    <li style="background-color: #FF0000;"></li>
+                </ul>
+                <ul>
+                    <li>Kelvin Route</li>
+                    <li style="background-color: #8B0074;"></li>
+                </ul>
+                <ul>
+                    <li>LinbroBusinessPark Route</li>
+                    <li style="background-color: #5900a6;"></li>
+                </ul>
+                <ul>
+                    <li>Midstream Route</li>
+                    <li style="background-color: #8B0074;"></li>
+                </ul>
+                <ul>
+                    <li>Queenswood Route</li>
+                    <li style="background-color: #800000;"></li>
+                </ul>
+                <ul>
+                    <li>WoodLands</li>
+                    <li style="background-color: #FF0066;"></li>
+                </ul>
+            </div>
         </div>
         <div id="map"></div>
     </div>
@@ -78,6 +80,7 @@
         $(window).load(function () {
             $(".pageloader").fadeOut("slow");
         });
+        $('#exceptionContainer').hide();
 
         var busId = "all";
         var markArr = [];
