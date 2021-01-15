@@ -36,6 +36,7 @@
         </div>
         <div class="wrapper">
             <div id="exceptionContainer">
+                <span id="cancel">X</span>
                 <h2>Exceptions</h2>
                 <div id="exceptionContent"></div>
             </div>
@@ -97,6 +98,10 @@
                 jQuery.browser.version = RegExp.$1;
             }
         })();
+        
+        $('#cancel').click(() => {
+            $('#exceptionContainer').hide();
+        })
         mapboxgl.accessToken = 'pk.eyJ1IjoiaW50ZWxsZXJneSIsImEiOiJja2h1YWR6YTMwaWxpMnpvM2RqZGtseDY1In0.1xADnFuRD1ip12QzF83xuQ';
         var map = new mapboxgl.Map({
             container: 'map',
